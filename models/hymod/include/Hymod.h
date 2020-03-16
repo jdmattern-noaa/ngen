@@ -4,6 +4,7 @@
 #include <cmath>
 #include <vector>
 #include "LinearReservoir.hpp"
+//#include "Nonlinear_Reservoir.hpp"
 
 //! Hymod paramaters struct
 /*!
@@ -86,6 +87,7 @@ class hymod_kernel
 
     //! run one time step of hymod
     static void run(
+        time_t delta_time,          //TODO: document time
         hymod_params params,        //!< static parameters for hymod
         hymod_state state,          //!< model state
         hymod_fluxes ks_fluxes,     //!< fluxes from Ks time steps in the past
@@ -96,12 +98,13 @@ class hymod_kernel
     {
 
         // initalize the nash cascade
-        std::vector<LinearReservoir> nash_cascade;
+        std::vector<Nonlinear_Reservoir> nash_cascade;
 
         nash_cascade.resize(params.n);
         for ( unsigned long i = 0; i < nash_cascade.size(); ++i )
         {
-            nash_cascade[i] = LinearReservoir(params.Kq, state.Sr[i]);
+            //construct a single outlet linear reservoir
+            nash_cascade[i] = Nonlinear_Reservoir(0, params.max_storage, state.Sr[i], 0, 1, 0);
         }
 
         // add flux to the current state
@@ -121,7 +124,7 @@ class hymod_kernel
 
         for(unsigned long int i = 0; i < nash_cascade.size(); ++i)
         {
-            runoff = nash_cascade[i].response(runoff);
+            runoff = nash_cascade[i].response(runoff * delta_time);
         }
 
         // record all fluxs
@@ -145,7 +148,9 @@ extern "C"
         C entry point for calling hymod_kernel::run
     */
 
-    inline void hymod(hymod_params params,  //!< static parameters for hymod
+    inline void hymod(       
+        time_t delta_time,    //TODO: document time
+        hymod_params params,  //!< static parameters for hymod
         hymod_state state,                  //!< model state
         hymod_fluxes ks_fluxes,             //!< fluxes from Ks time steps in the past
         hymod_state* new_state,             //!< model state struct to hold new model state
