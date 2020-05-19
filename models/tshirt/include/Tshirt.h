@@ -10,6 +10,7 @@
 #include <cmath>
 #include <utility>
 #include <vector>
+#include <memory>
 
 namespace tshirt {
 
@@ -157,7 +158,7 @@ namespace tshirt {
             // TODO: verify correctness of activation_threshold (Sfc) and max_velocity (max_lateral_flow) arg values
             for (unsigned long i = 0; i < soil_lf_nash_res.size(); ++i) {
                 //construct a single outlet nonlinear reservoir
-                soil_lf_nash_res[i] = make_unique<Nonlinear_Reservoir>(
+                soil_lf_nash_res[i] = std::make_unique<Nonlinear_Reservoir>(
                         Nonlinear_Reservoir(0.0, model_params.max_soil_storage_meters,
                                             previous_state->nash_cascade_storeage_meters[i], model_params.Kn, 1.0,
                                             Sfc, model_params.max_lateral_flow));
