@@ -2,6 +2,7 @@
 
 using namespace realization;
 
+
 Tshirt_Realization::Tshirt_Realization(
         double soil_storage_meters,
         double groundwater_storage_meters,
@@ -21,7 +22,7 @@ Tshirt_Realization::Tshirt_Realization(
         state[t]->nash_cascade_storeage_meters[i] = nash_storage[i];
     }
 
-    model = make_unique<tshirt::tshirt_model>(tshirt::tshirt_model(params, state[t]));
+    model = tshirt::make_unique<tshirt::tshirt_model>(tshirt::tshirt_model(params, state[t]));
 }
 
 Tshirt_Realization::Tshirt_Realization(

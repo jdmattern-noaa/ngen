@@ -14,6 +14,12 @@
 
 namespace tshirt {
 
+template<typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args&&... args) {
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+
+
     //! Tshirt parameters struct
     /*!
         This structure provides storage for the parameters of the Tshirt hydrological model
@@ -158,7 +164,7 @@ namespace tshirt {
             // TODO: verify correctness of activation_threshold (Sfc) and max_velocity (max_lateral_flow) arg values
             for (unsigned long i = 0; i < soil_lf_nash_res.size(); ++i) {
                 //construct a single outlet nonlinear reservoir
-                soil_lf_nash_res[i] = std::make_unique<Nonlinear_Reservoir>(
+                soil_lf_nash_res[i] = tshirt::make_unique<Nonlinear_Reservoir>(
                         Nonlinear_Reservoir(0.0, model_params.max_soil_storage_meters,
                                             previous_state->nash_cascade_storeage_meters[i], model_params.Kn, 1.0,
                                             Sfc, model_params.max_lateral_flow));
