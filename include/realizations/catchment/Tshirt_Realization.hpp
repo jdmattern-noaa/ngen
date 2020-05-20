@@ -48,7 +48,11 @@ namespace realization {
         virtual ~Tshirt_Realization();
 
         double get_response(double input_flux, time_step_t t, const shared_ptr<pdm03_struct>& et_params);
+<<<<<<< HEAD
         double get_response(double input_flux, time_step_t t, void* et_params);
+=======
+        double get_response(double input_flux, time_step_t t, time_step_t dt, void* et_params);
+>>>>>>> fa747584d96f1fbe365710f9999a98c74c10c7ab
         void add_time(time_t t, double n);
 
     private:
@@ -58,6 +62,8 @@ namespace realization {
         tshirt::tshirt_params params;
         unique_ptr<tshirt::tshirt_model> model;
         unique_ptr<giuh::giuh_kernel> giuh_kernel;
+        //The delta time (dt) this instance is configured to use
+        time_step_t dt;
 
     };
 

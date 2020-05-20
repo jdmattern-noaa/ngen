@@ -64,6 +64,12 @@ std::unordered_map<std::string, std::unique_ptr<HY_CatchmentRealization>>  catch
 std::unordered_map<std::string, std::unique_ptr<HY_HydroNexus>> nexus_realizations;
 std::unordered_map<std::string, std::string> catchment_to_nexus;
 std::unordered_map<std::string, std::string> nexus_to_catchment;
+<<<<<<< HEAD
+=======
+std::unordered_map<std::string, std::string> nexus_from_catchment;
+std::unordered_map<std::string, std::vector<double>> output_map;
+
+>>>>>>> fa747584d96f1fbe365710f9999a98c74c10c7ab
 //TODO move catchment int identity to relization, and update nexus to use string id
 std::unordered_map<std::string, int> catchment_id;
 std::unordered_map<std::string, std::string> forcing_paths {
@@ -78,6 +84,7 @@ pdm03_struct pdm_et_data;
 //Define tshirt params
 //{maxsmc, wltsmc, satdk, satpsi, slope, b, multiplier, aplha_fx, klf, kn, nash_n, Cgw, expon, max_gw_storage}
 tshirt::tshirt_params tshirt_params{
+<<<<<<< HEAD
   1000.0, //maxsmc
   1.0,    //wltsmc
   10.0,   //satdk
@@ -93,11 +100,34 @@ tshirt::tshirt_params tshirt_params{
   1.0,    //expon
   100.0   //max_gw_storage
 };
+=======
+  0.81,   //maxsmc FWRFH
+  1.0,    //wltsmc  FIXME NOT USED IN TSHIRT?!?!
+  0.48,   //satdk FWRFH
+  0.1,    //satpsi    FIXME what is this and what should its value be?
+  0.58,   //slope FWRFH
+  1.3,      //b bexp? FWRFH
+  1.0,    //multipier  FIXMME what should this value be
+  1.0,    //aplha_fc   FIXME what should this value be
+  0.0000672,    //Klf F
+  0.1,    //Kn Kn	0.001-0.03 F
+  8,      //nash_n     FIXME is 8 a good number for the cascade?
+  1.08,    //Cgw C? FWRFH
+  6.0,    //expon FWRFH
+  16.0   //max_gw_storage Sgwmax FWRFH
+};
+
+//FIXME get real values for GIUH/Catchments
+>>>>>>> fa747584d96f1fbe365710f9999a98c74c10c7ab
 std::vector<double> cdf_times {0, 300, 600, 900, 1200};//, 1500, 1800, 2100, 2400, 2700};
 std::vector<double> cdf_freq {0.00, 0.38, 0.59, 0.03, 0.0};
 
 giuh::giuh_kernel giuh_k("cat-88", cdf_times, cdf_freq);
+<<<<<<< HEAD
 unique_ptr<giuh::giuh_kernel> giuh_example = tshirt::make_unique<giuh::giuh_kernel>(giuh_k);
+=======
+unique_ptr<giuh::giuh_kernel> giuh_example = make_unique<giuh::giuh_kernel>(giuh_k);
+>>>>>>> fa747584d96f1fbe365710f9999a98c74c10c7ab
 
 typedef Simple_Lumped_Model_Realization _hymod;
 typedef realization::Tshirt_Realization _tshirt;
@@ -151,13 +181,21 @@ int main(int argc, char *argv[]) {
         forcing_params forcing_p(forcing_paths[feat_id], start_time, end_time);
         if (feature->get_property("realization").as_string() == "hymod") {
             //Create the hymod instance
+<<<<<<< HEAD
             catchment_realizations[feature->get_id()] = tshirt::make_unique<_hymod>( _hymod(forcing_p, storage, max_storage, a, b, Ks, Kq, n, sr_tmp, t) );
+=======
+            catchment_realizations[feature->get_id()] = std::make_unique<_hymod>( _hymod(forcing_p, storage, max_storage, a, b, Ks, Kq, n, sr_tmp, t) );
+>>>>>>> fa747584d96f1fbe365710f9999a98c74c10c7ab
         }
         else if(feature->get_property("realization").as_string() == "tshirt") {
           //Create the tshirt instance
           vector<double> nash_storage = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 
+<<<<<<< HEAD
           catchment_realizations[feature->get_id()] = tshirt::make_unique<_tshirt>(forcing_p,
+=======
+          catchment_realizations[feature->get_id()] = std::make_unique<_tshirt>(forcing_p,
+>>>>>>> fa747584d96f1fbe365710f9999a98c74c10c7ab
                  1.0, //soil_storage_meters
                  1.0, //groundwater_storage_meters
                  move(giuh_example), tshirt_params, nash_storage, dt);
@@ -175,22 +213,38 @@ int main(int argc, char *argv[]) {
       }else{
         //Create nexus realization, add to map
         int num = std::stoi( feat_id.substr(4) );
+<<<<<<< HEAD
         nexus_realizations[feat_id] = tshirt::make_unique<HY_PointHydroNexus>(
+=======
+        nexus_realizations[feat_id] = std::make_unique<HY_PointHydroNexus>(
+>>>>>>> fa747584d96f1fbe365710f9999a98c74c10c7ab
                                       HY_PointHydroNexus(num, feat_id,
                                                          feature->get_number_of_destination_features()));
        if(feature->get_number_of_destination_features() == 1)
        {
          nexus_to_catchment[feat_id] = feature->destination_features()[0]->get_id();
        }
+<<<<<<< HEAD
        else
        {
          //TODO
        }
+=======
+       else if(feature->get_number_of_origination_features() == 1)
+       {
+         nexus_from_catchment[feat_id] = feature->origination_features()[0]->get_id();
+       }
+       else{
+         //TODO
+       }
+       output_map[feat_id] = std::vector<double>();
+>>>>>>> fa747584d96f1fbe365710f9999a98c74c10c7ab
       }
 
     }
     std::cout<<"Running Models"<<std::endl;
     //Now loop some time, iterate catchments, do stuff for 720 hourly time steps
+<<<<<<< HEAD
     for(int time_step = 0; time_step < 1; time_step++)
     {
       for(auto &catchment: catchment_realizations)
@@ -204,6 +258,37 @@ int main(int argc, char *argv[]) {
                    response<<" meters of water from "<<catchment.first<<" ready to route downstream."<<std::endl;
       }
       }
+=======
+    for(int time_step = 0; time_step < 100; time_step++)
+    {
+      std::cout<<"Time step "<<time_step<<std::endl;
+      for(auto &catchment: catchment_realizations)
+      {
+        if(catchment.first == "cat-88" || catchment.first == "cat-89")
+        {
+        //Get response for an hour (3600 seconds) time step
+        double response = catchment.second->get_response(0, time_step, 3600.0, &pdm_et_data);
+
+        std::cout<<"\tCatchment "<<catchment.first<<" contributing "<<response<<" m/s to "<<catchment_to_nexus[catchment.first]<<std::endl;
+
+        nexus_realizations[ catchment_to_nexus[catchment.first] ]->add_upstream_flow(response, catchment_id[catchment.first], time_step);
+      }
+      }
+      for(auto &nexus: nexus_realizations)
+      {
+        if(nexus.first == "nex-92"){
+        std::cout<<nexus.first<<std::endl;
+        std::cout<<nexus_to_catchment[nexus.first]<<std::endl;
+        //TODO this ID isn't all that important is it?  And really it should connect to
+        //the downstream waterbody the way we are using it, so consider if this is needed
+        //it works for now though, so keep it
+        int id = catchment_id[nexus_from_catchment[nexus.first]];
+        double contribution_at_t = nexus_realizations[nexus.first]->get_downstream_flow(id, time_step, 100.0);
+        std::cout<<"\tNexus "<<nexus.first<<" has "<<contribution_at_t<<std::endl;
+        output_map[nexus.first].push_back(contribution_at_t);
+        }
+      }
+>>>>>>> fa747584d96f1fbe365710f9999a98c74c10c7ab
     }
     /*
         The basic driving algorithm looks something like this:
