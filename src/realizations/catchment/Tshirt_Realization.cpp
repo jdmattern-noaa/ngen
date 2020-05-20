@@ -1,5 +1,7 @@
 #include "Tshirt_Realization.hpp"
 
+#include <fstream>
+
 using namespace realization;
 
 
@@ -85,6 +87,14 @@ double Tshirt_Realization::get_response(double input_flux, time_step_t t,
     //FIXME doesn't do anything, don't call???
     //add_time(t+1, params.nash_n);
     double precip = this->forcing.get_next_hourly_precipitation_meters_per_second();
+
+    cout << "Tshirt precip: " << precip << endl;
+
+  std::ofstream outfile;
+
+  outfile.open("../tshirt_precip.txt", std::ios_base::app); // append instead of overwrite
+  outfile << precip << endl;
+
     //FIXME should this run "daily" or hourly (t) which should really be dt
     //Do we keep an "internal dt" i.e. this->dt and reconcile with t?
     model->run(t, precip, et_params);

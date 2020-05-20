@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include <fstream>
+
 
 
 Simple_Lumped_Model_Realization::Simple_Lumped_Model_Realization(
@@ -63,6 +65,13 @@ double Simple_Lumped_Model_Realization::get_response(double input_flux, time_ste
 {   //TODO input_flux = this->forcing.get_input(t)
     //TODO input_et = this->forcing.get_et(t)
     double precip = this->forcing.get_next_hourly_precipitation_meters_per_second();
+
+    cout << "Simple Lumped Precip: " << precip << endl;
+
+  std::ofstream outfile;
+
+  outfile.open("../simple_lumped_precip.txt", std::ios_base::app); // append instead of overwrite
+  outfile << precip << endl;
 
     add_time(t+1, params.n);
     //FIXME should this run "daily" or hourly (t) which should really be dt
