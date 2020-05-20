@@ -71,8 +71,8 @@ target_link_libraries(ngen PUBLIC
         #NGen::core_catchment_giuh
         NGen::core_nexus
         NGen::geojson
-        NGen::models_tshirt
         NGen::realizations_catchment
+        NGen::models_tshirt
         #NGen::forcing
         )
 

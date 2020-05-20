@@ -97,7 +97,7 @@ std::vector<double> cdf_times {0, 300, 600, 900, 1200};//, 1500, 1800, 2100, 240
 std::vector<double> cdf_freq {0.00, 0.38, 0.59, 0.03, 0.0};
 
 giuh::giuh_kernel giuh_k("cat-88", cdf_times, cdf_freq);
-unique_ptr<giuh::giuh_kernel> giuh_example = make_unique<giuh::giuh_kernel>(giuh_k);
+unique_ptr<giuh::giuh_kernel> giuh_example = tshirt::make_unique<giuh::giuh_kernel>(giuh_k);
 
 typedef Simple_Lumped_Model_Realization _hymod;
 typedef realization::Tshirt_Realization _tshirt;
@@ -151,13 +151,13 @@ int main(int argc, char *argv[]) {
         forcing_params forcing_p(forcing_paths[feat_id], start_time, end_time);
         if (feature->get_property("realization").as_string() == "hymod") {
             //Create the hymod instance
-            catchment_realizations[feature->get_id()] = std::make_unique<_hymod>( _hymod(forcing_p, storage, max_storage, a, b, Ks, Kq, n, sr_tmp, t) );
+            catchment_realizations[feature->get_id()] = tshirt::make_unique<_hymod>( _hymod(forcing_p, storage, max_storage, a, b, Ks, Kq, n, sr_tmp, t) );
         }
         else if(feature->get_property("realization").as_string() == "tshirt") {
           //Create the tshirt instance
           vector<double> nash_storage = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 
-          catchment_realizations[feature->get_id()] = std::make_unique<_tshirt>(forcing_p,
+          catchment_realizations[feature->get_id()] = tshirt::make_unique<_tshirt>(forcing_p,
                  1.0, //soil_storage_meters
                  1.0, //groundwater_storage_meters
                  move(giuh_example), tshirt_params, nash_storage, dt);
@@ -175,7 +175,7 @@ int main(int argc, char *argv[]) {
       }else{
         //Create nexus realization, add to map
         int num = std::stoi( feat_id.substr(4) );
-        nexus_realizations[feat_id] = std::make_unique<HY_PointHydroNexus>(
+        nexus_realizations[feat_id] = tshirt::make_unique<HY_PointHydroNexus>(
                                       HY_PointHydroNexus(num, feat_id,
                                                          feature->get_number_of_destination_features()));
        if(feature->get_number_of_destination_features() == 1)

@@ -12,13 +12,12 @@
 #include <vector>
 #include <memory>
 
-namespace tshirt {
 
+namespace tshirt{
 template<typename T, typename... Args>
 std::unique_ptr<T> make_unique(Args&&... args) {
     return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
-
 
     //! Tshirt parameters struct
     /*!
@@ -427,6 +426,7 @@ std::unique_ptr<T> make_unique(Args&&... args) {
         }
     };
 }
+
 
 //!
 
