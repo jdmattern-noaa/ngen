@@ -145,7 +145,7 @@ TEST_F(ForcingTest, TestForcingDataRead)
    EXPECT_EQ(350, current_day_of_year);
 
    //Check exceeding the forcing range to retrieve the last forcing precipation rate
-   for (int i = 66; i < 460; i++)
+   for (int i = 66; i < 389; i++)
    {
       current_precipitation = Forcing_Object_AORC->get_next_hourly_precipitation_meters_per_second();
    }
@@ -158,7 +158,7 @@ TEST_F(ForcingTest, TestForcingDataRead)
 
    current_day_of_year = Forcing_Object_AORC->get_day_of_year();
 
-   EXPECT_EQ(1, current_day_of_year);
+   EXPECT_EQ(363, current_day_of_year);
 }
 
 
