@@ -200,7 +200,7 @@ int main(int argc, char *argv[]) {
     }
     std::cout<<"Running Models"<<std::endl;
     //Now loop some time, iterate catchments, do stuff for 720 hourly time steps
-    for(int time_step = 0; time_step < 100; time_step++)
+    for(int time_step = 0; time_step < 719; time_step++)
     {
       std::cout<<"Time step "<<time_step<<std::endl;
       for(auto &catchment: catchment_realizations)
