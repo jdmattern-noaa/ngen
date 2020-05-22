@@ -144,6 +144,16 @@ TEST_F(ForcingTest, TestForcingDataRead)
 
    EXPECT_EQ(350, current_day_of_year);
 
+   double APCP_surface_kg_per_meters_squared;
+
+   APCP_surface_kg_per_meters_squared = Forcing_Object_AORC->get_AORC_APCP_surface_kg_per_meters_squared();
+
+   double APCP_surface_kg_per_meters_squared_rounded = round(APCP_surface_kg_per_meters_squared * 10000000.0) / 10000000.0;
+
+   double compare_APCP_surface_kg_per_meters_squared_rounded = round(4.4000000999999997 * 10000000.0) / 10000000.0;
+
+   EXPECT_DOUBLE_EQ(APCP_surface_kg_per_meters_squared_rounded, compare_APCP_surface_kg_per_meters_squared_rounded);
+
    //Check exceeding the forcing range to retrieve the last forcing precipation rate
    for (int i = 66; i < 389; i++)
    {
@@ -160,7 +170,3 @@ TEST_F(ForcingTest, TestForcingDataRead)
 
    EXPECT_EQ(363, current_day_of_year);
 }
-
-
-
-
