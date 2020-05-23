@@ -42,6 +42,20 @@ struct forcing_params
     }
 };
 
+//AORC Forcing Data Struct
+struct AORC_data
+{
+  double APCP_surface_kg_per_meters_squared; //Total Precipitation (kg/m^2)
+  double DLWRF_surface_W_per_meters_squared; //Downward Long-Wave Rad. (Flux W/m^2)
+  double DSWRF_surface_W_per_meters_squared; //Downward Short-Wave Radiation (Flux W/m^2)
+  double PRES_surface_Pa; //Pressure (Pa)
+  double SPFH_2maboveground_kg_per_kg; //Specific Humidity (kg/kg)
+  double TMP_2maboveground_K; //Temperature (K)
+  double UGRD_10maboveground_meters_per_second; //U-Component of Wind (m/s)
+  double VGRD_10maboveground_meters_per_second; //V-Component of Wind (m/s)
+};
+
+
 /**
  * @brief Forcing class providing time-series precipiation forcing data to the model.
  */
@@ -62,7 +76,7 @@ class Forcing
     Forcing(forcing_params forcing_config):start_date_time_epoch(forcing_config.start_t),
                                            end_date_time_epoch(forcing_config.end_t),
                                            current_date_time_epoch(forcing_config.start_t),
-                                           forcing_vector_index_ptr(-1)
+                                           forcing_vector_index(-1)
     {
         read_forcing_aorc(forcing_config.path);
     }
@@ -90,9 +104,32 @@ class Forcing
         read_forcing_aorc(forcing_file_name);
 
         //Initialize forcing vector index to 0;
-        forcing_vector_index_ptr = 0;
+        forcing_vector_index = 0;
     }
 
+    /**
+     * @brief Checks forcing vector index bounds and adjusts index if out of vector bounds
+     */
+    void check_forcing_vector_index_bounds()
+    {
+        //Check if forcing index is less than zero and if so, set to zero.
+        if (forcing_vector_index < 0)
+        {
+            forcing_vector_index = 0;
+            /// \todo: Return appropriate warning
+            cout << "WARNING: Forcing vector index is less than zero. Therefore, setting index to zero." << endl;
+        }
+
+        //Check if forcing index is greater than or equal to the size of the size of the precipiation vector and if so, set to zero.
+        else if (forcing_vector_index >= precipitation_rate_meters_per_second_vector.size())
+        {
+            forcing_vector_index = precipitation_rate_meters_per_second_vector.size() - 1;
+            /// \todo: Return appropriate warning
+            cout << "WARNING: Reached beyond the size of the forcing vector. Therefore, setting index to last value of the vector." << endl;
+        }
+
+        return;
+    }
 
     /**
      * @brief Gets current hourly precipitation in meters per second
@@ -102,30 +139,26 @@ class Forcing
      */
     double get_current_hourly_precipitation_meters_per_second()
     {
-        //Check if forcing index is less than zero and if so, set to zero.
-        if (forcing_vector_index_ptr < 0)
-        {
-            forcing_vector_index_ptr = 0;
-            /// \todo: Return appropriate warning
-            cout << "WARNING: Forcing precipitation vector index is less than zero. Therefore, this index is set to zero." << endl;
-        }
+        check_forcing_vector_index_bounds();
 
-        return precipitation_rate_meters_per_second_vector.at(forcing_vector_index_ptr);
+        return precipitation_rate_meters_per_second_vector.at(forcing_vector_index);
     }
 
     /**
      * @brief Gets next hourly precipitation in meters per second
      * Increments pointer in forcing vector by one timestep
      * Precipitation frequency is assumed to be hourly for now.
-     * TODO: Add input for dt (delta time) for different frequencies in the data than the model frequency.
+     * /// \todo: Add input for dt (delta time) for different frequencies in the data than the model frequency.
+     * /// \todo: Reconsider incrementing the forcing_vector_index because other functions rely on this, and it
+     *            could have side effects
      * @return the current hourly precipitation in meters per second after pointer is incremented by one timestep
      */
     double get_next_hourly_precipitation_meters_per_second()
     {
         //Check forcing vector bounds before incrementing forcing index
-        if (forcing_vector_index_ptr < forcing_vector_size - 1)
+        if (forcing_vector_index < precipitation_rate_meters_per_second_vector.size() - 1)
             //Increment forcing index
-            forcing_vector_index_ptr = forcing_vector_index_ptr + 1;
+            forcing_vector_index = forcing_vector_index + 1;
 
         else
             /// \todo: Return appropriate warning
@@ -144,7 +177,9 @@ class Forcing
 
         struct tm *current_date_time;
 
-        current_date_time_epoch = time_epoch_vector.at(forcing_vector_index_ptr);
+        check_forcing_vector_index_bounds();
+
+        current_date_time_epoch = time_epoch_vector.at(forcing_vector_index);
 
         /// \todo: Sort out using local versus UTC time
         current_date_time = localtime(&current_date_time_epoch);
@@ -155,12 +190,39 @@ class Forcing
     }
 
     /**
+     * @brief Accessor to time epoch
+     * @return current_date_time_epoch
+     */
+    time_t get_time_epoch()
+    {
+        check_forcing_vector_index_bounds();
+
+        return current_date_time_epoch = time_epoch_vector.at(forcing_vector_index);
+    };
+
+
+    /**
+     * @brief Accessor to AORC struct
+     * @return AORC_data
+     */
+
+    AORC_data get_AORC_data()
+    {
+        check_forcing_vector_index_bounds();
+
+        return AORC_vector.at(forcing_vector_index);
+    };
+
+
+    /**
      * @brief Accessor to AORC APCP_surface_kg_per_meters_squared
      * @return APCP_surface_kg_per_meters_squared
      */
     double get_AORC_APCP_surface_kg_per_meters_squared()
     {
-        return AORC_vector.at(forcing_vector_index_ptr).APCP_surface_kg_per_meters_squared;
+        check_forcing_vector_index_bounds();
+
+        return AORC_vector.at(forcing_vector_index).APCP_surface_kg_per_meters_squared;
     };
 
     /**
@@ -169,7 +231,9 @@ class Forcing
      */
     double get_AORC_DLWRF_surface_W_per_meters_squared()
     {
-        return AORC_vector.at(forcing_vector_index_ptr).DLWRF_surface_W_per_meters_squared;
+        check_forcing_vector_index_bounds();
+
+        return AORC_vector.at(forcing_vector_index).DLWRF_surface_W_per_meters_squared;
     };
 
     /**
@@ -178,7 +242,9 @@ class Forcing
      */
     double get_AORC_DSWRF_surface_W_per_meters_squared()
     {
-        return AORC_vector.at(forcing_vector_index_ptr).DSWRF_surface_W_per_meters_squared;
+        check_forcing_vector_index_bounds();
+
+        return AORC_vector.at(forcing_vector_index).DSWRF_surface_W_per_meters_squared;
     };
 
     /**
@@ -187,7 +253,9 @@ class Forcing
      */
     double get_AORC_PRES_surface_Pa()
     {
-        return AORC_vector.at(forcing_vector_index_ptr).PRES_surface_Pa;
+        check_forcing_vector_index_bounds();
+
+        return AORC_vector.at(forcing_vector_index).PRES_surface_Pa;
     };
 
     /**
@@ -196,16 +264,20 @@ class Forcing
      */
     double get_AORC_SPFH_2maboveground_kg_per_kg()
     {
-        return AORC_vector.at(forcing_vector_index_ptr).SPFH_2maboveground_kg_per_kg;
+        check_forcing_vector_index_bounds();
+
+        return AORC_vector.at(forcing_vector_index).SPFH_2maboveground_kg_per_kg;
     };
 
     /**
      * @brief Accessor to AORC TMP_2maboveground_K
      * @return TMP_2maboveground_K
      */
-    double get_AORC_()
+    double get_AORC_TMP_2maboveground_K()
     {
-        return AORC_vector.at(forcing_vector_index_ptr).TMP_2maboveground_K;
+        check_forcing_vector_index_bounds();
+
+        return AORC_vector.at(forcing_vector_index).TMP_2maboveground_K;
     };
 
     /**
@@ -214,7 +286,9 @@ class Forcing
      */
     double get_AORC_UGRD_10maboveground_meters_per_second()
     {
-        return AORC_vector.at(forcing_vector_index_ptr).UGRD_10maboveground_meters_per_second;
+        check_forcing_vector_index_bounds();
+
+        return AORC_vector.at(forcing_vector_index).UGRD_10maboveground_meters_per_second;
     };
 
     /**
@@ -223,7 +297,9 @@ class Forcing
      */
     double get_AORC_VGRD_10maboveground_meters_per_second()
     {
-        return AORC_vector.at(forcing_vector_index_ptr).VGRD_10maboveground_meters_per_second;
+        check_forcing_vector_index_bounds();
+
+        return AORC_vector.at(forcing_vector_index).VGRD_10maboveground_meters_per_second;
     };
 
 
@@ -383,11 +459,9 @@ class Forcing
                 //Free memory from struct
                 //delete current_row_date_time_utc;
         }
-
-        //Get size of forcing precipitation rate vector
-        forcing_vector_size = precipitation_rate_meters_per_second_vector.size();
     }
 
+/*
     //AORC Forcing Data Struct
     struct AORC_data
     {
@@ -400,13 +474,16 @@ class Forcing
         double UGRD_10maboveground_meters_per_second; //U-Component of Wind (m/s)
         double VGRD_10maboveground_meters_per_second; //V-Component of Wind (m/s)
     };
+*/
+
 
     vector<AORC_data> AORC_vector;
 
     vector<double> precipitation_rate_meters_per_second_vector;
-    vector<time_t> time_epoch_vector; 
-    int forcing_vector_index_ptr;
-    int forcing_vector_size;
+
+    /// \todo: Consider making epoch time the iterator
+    vector<time_t> time_epoch_vector;     
+    int forcing_vector_index;
     double precipitation_rate_meters_per_second;
     double air_temperature_fahrenheit;
     double latitude; //latitude (degrees_north)
