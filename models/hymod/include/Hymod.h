@@ -1,3 +1,4 @@
+  
 #ifndef HYMOD_H
 #define HYMOD_H
 
@@ -14,12 +15,21 @@
 
 struct hymod_params
 {
+    double min_storage_meters; //!< minimum amount of water stored
     double max_storage_meters; //!< maximum amount of water stored
+    double activation_threshold_meters_nash_cascade_reservoir; //!< meters from the bottom of the reservoir to the bottom of the outlet
+    double activation_threshold_meters_groundwater_reservoir; //!< meters from the bottom of the reservoir to the bottom of the outlet
+    double reservoir_max_velocity_meters_per_second; //!<max outlet velocity in meters per second
     double a;               //!< coefficent for distributing runoff and slowflow
     double b;               //!< exponent for flux equation
+    //Ks and Kq are coeeficint constants used by the non-linear reservoirs.  There is an implicit unit of time
+    //in these parameters to make `a*(dS/S)^b` have approriate units of meters/second
+    //this implies that for any given timstep, dt, the approriate coefficients may be different.
     double Ks;              //!< slow flow coefficent
     double Kq;              //!< quick flow coefficent
-    double n;               //!< number of nash cascades
+
+
+    int n;               //!< number of nash cascades
 };
 
 //! Hymod state structure
@@ -78,8 +88,6 @@ enum HyModErrorCodes
 //! Hymod kernel class
 /*!
     This class implements the hymod hydrological model
-
-
 */
 
 class hymod_kernel
@@ -120,11 +128,11 @@ class hymod_kernel
         for ( unsigned long i = 0; i < nash_cascade.size(); ++i )
         {
             //construct a single outlet nonlinear reservoir
-            nash_cascade[i] = Nonlinear_Reservoir(0, params.max_storage_meters, state.Sr[i], params.Kq, 1, 0, 100);
+            nash_cascade[i] = Nonlinear_Reservoir(params.min_storage_meters, params.max_storage_meters, state.Sr[i], params.Kq, params.b, params.activation_threshold_meters_nash_cascade_reservoir, params.reservoir_max_velocity_meters_per_second);
         }
 
         // initalize groundwater reservoir
-        Nonlinear_Reservoir groundwater(0, params.max_storage_meters, state.groundwater_storage_meters, params.Ks, 1, 0, 100);
+        Nonlinear_Reservoir groundwater(params.min_storage_meters, params.max_storage_meters, state.groundwater_storage_meters, params.Ks, params.b, params.activation_threshold_meters_groundwater_reservoir, params.reservoir_max_velocity_meters_per_second);
 
         // add flux to the current state
         state.storage_meters += input_flux_meters;
