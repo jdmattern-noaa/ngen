@@ -76,7 +76,7 @@ const std::string EXAMPLE_1 = "{ "
             "} "
       "], "
       "\"forcing\": { "
-          "\"file_pattern\": \".*{{ID}}.*.csv\", "
+          "\"file_pattern\": \".*{{id}}.*.csv\", "
           "\"path\": \"./data/forcing/\" "
       "} "
     "}, "
@@ -86,7 +86,7 @@ const std::string EXAMPLE_1 = "{ "
         "\"output_interval\": 3600 "
     "}, "
     "\"catchments\": { "
-        "\"wat-88\": { "
+        "\"cat-52\": { "
           "\"formulations\": [ "
             "{"
                 "\"name\": \"simple_lumped\", "
@@ -111,10 +111,10 @@ const std::string EXAMPLE_1 = "{ "
             "} "
           "], "
           "\"forcing\": { "
-              "\"path\": \"./data/forcing/cat-88_2015-12-01 00_00_00_2015-12-30 23_00_00.csv\" "
+              "\"path\": \"./data/forcing/cat-52_2015-12-01 00_00_00_2015-12-30 23_00_00.csv\" "
           "} "
         "}, "
-        "\"wat-89\": { "
+        "\"cat-67\": { "
         "\"formulations\": [ "
             "{"
               "\"name\": \"tshirt\", "
@@ -154,7 +154,7 @@ const std::string EXAMPLE_1 = "{ "
             "} "
           "], "
           "\"forcing\": { "
-              "\"path\": \"./data/forcing/cat-89_2015-12-01 00_00_00_2015-12-30 23_00_00.csv\" "
+              "\"path\": \"./data/forcing/cat-67_2015-12-01 00_00_00_2015-12-30 23_00_00.csv\" "
           "} "
         "} "
     "} "
@@ -211,7 +211,7 @@ const std::string EXAMPLE_2 = "{ "
         "\"output_interval\": 3600 "
     "}, "
     "\"catchments\": { "
-        "\"wat-88\": { "
+        "\"cat-52\": { "
         "\"formulations\": [ "
           "{"
             "\"name\": \"simple_lumped\", "
@@ -236,10 +236,10 @@ const std::string EXAMPLE_2 = "{ "
           "} "
         "], "
           "\"forcing\": { "
-              "\"path\": \"./data/forcing/cat-88_2015-12-01 00_00_00_2015-12-30 23_00_00.csv\" "
+              "\"path\": \"./data/forcing/cat-52_2015-12-01 00_00_00_2015-12-30 23_00_00.csv\" "
           "} "
         "}, "
-        "\"wat-89\": { "
+        "\"cat-67\": { "
           "\"formulations\": [ "
             "{"
               "\"name\": \"tshirt\", "
@@ -280,7 +280,7 @@ const std::string EXAMPLE_2 = "{ "
           "}"
         "],"
           "\"forcing\": { "
-              "\"path\": \"./data/forcing/cat-89_2015-12-01 00_00_00_2015-12-30 23_00_00.csv\" "
+              "\"path\": \"./data/forcing/cat-67_2015-12-01 00_00_00_2015-12-30 23_00_00.csv\" "
           "} "
         "} "
     "} "
@@ -338,7 +338,7 @@ const std::string EXAMPLE_3 = "{ "
         "\"output_interval\": 3600 "
     "}, "
     "\"catchments\": { "
-        "\"wat-88\": { "
+        "\"cat-52\": { "
           "\"formulations\": [ "
             "{"
               "\"name\": \"simple_lumped\", "
@@ -363,10 +363,10 @@ const std::string EXAMPLE_3 = "{ "
             "}"
           "], "
           "\"forcing\": { "
-              "\"path\": \"./data/forcing/cat-88_2015-12-01 00_00_00_2015-12-30 23_00_00.csv\" "
+              "\"path\": \"./data/forcing/cat-52_2015-12-01 00_00_00_2015-12-30 23_00_00.csv\" "
           "} "
         "}, "
-        "\"wat-89\": { "
+        "\"cat-67\": { "
           "\"formulations\": [ "
             "{"
               "\"name\": \"tshirt_c\", "
@@ -406,7 +406,7 @@ const std::string EXAMPLE_3 = "{ "
           "} "
         "], "
           "\"forcing\": { "
-              "\"path\": \"./data/forcing/cat-89_2015-12-01 00_00_00_2015-12-30 23_00_00.csv\" "
+              "\"path\": \"./data/forcing/cat-67_2015-12-01 00_00_00_2015-12-30 23_00_00.csv\" "
           "} "
         "} "
     "} "
@@ -428,8 +428,8 @@ TEST_F(Formulation_Manager_Test, basic_reading_1) {
 
     ASSERT_EQ(manager.get_size(), 2);
 
-    ASSERT_TRUE(manager.contains("wat-88"));
-    ASSERT_TRUE(manager.contains("wat-89"));
+    ASSERT_TRUE(manager.contains("cat-52"));
+    ASSERT_TRUE(manager.contains("cat-67"));
 }
 
 TEST_F(Formulation_Manager_Test, basic_reading_2) {
@@ -450,8 +450,8 @@ TEST_F(Formulation_Manager_Test, basic_reading_2) {
 
     ASSERT_EQ(manager.get_size(), 2);
 
-    ASSERT_TRUE(manager.contains("wat-88"));
-    ASSERT_TRUE(manager.contains("wat-89"));
+    ASSERT_TRUE(manager.contains("cat-52"));
+    ASSERT_TRUE(manager.contains("cat-67"));
 }
 
 TEST_F(Formulation_Manager_Test, basic_run_1) {
@@ -515,7 +515,7 @@ TEST_F(Formulation_Manager_Test, basic_run_3) {
 
     for (int i = 0; i < expected_results.size(); i++) {
         // Remember that for the Tshirt_C_Realization, the timestep sizes are implicit
-        actual_results[i] = manager.get_formulation("wat-89")->get_response(i, 3600)*3600;
+        actual_results[i] = manager.get_formulation("cat-67")->get_response(i, 3600);
     }
 
     for (int i = 0; i < actual_results.size(); i++) {
