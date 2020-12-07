@@ -62,7 +62,7 @@ else()
     endif()
 endif()
 
-find_package(Torch REQUIRED)
+#find_package(Torch REQUIRED)
 
 
 find_package(Boost 1.72.0 REQUIRED)
@@ -92,7 +92,7 @@ target_link_libraries(ngen PUBLIC
         NGen::kernels_reservoir
         #NGen::kernels_reservoir_timeless
         #NGen::forcing
-        ${TORCH_LIBRARIES}
+        #${TORCH_LIBRARIES}
         )
 
 # For automated testing with Google Test
