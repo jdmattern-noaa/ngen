@@ -62,7 +62,7 @@ else()
     endif()
 endif()
 
-#find_package(Torch REQUIRED)
+find_package(Torch REQUIRED)
 
 
 find_package(Boost 1.72.0 REQUIRED)

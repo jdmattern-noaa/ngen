@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-//#include <torch/script.h>
+#include <torch/script.h>
 
 using namespace std;
 
@@ -43,7 +43,7 @@ namespace lstm {
         // ********** Acceptable error range for mass balance calculations; hard-coded for now to this value
         //mass_check_error_bound = 0.000001;
 
-
+        torch::Tensor t = torch::zeros({1,1});
         cout << model_params.input_biases_path;
 
 
