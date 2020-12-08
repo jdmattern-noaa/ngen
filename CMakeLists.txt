@@ -64,6 +64,8 @@ endif()
 
 find_package(Torch REQUIRED)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
+
 
 find_package(Boost 1.72.0 REQUIRED)
 
@@ -92,7 +94,8 @@ target_link_libraries(ngen PUBLIC
         NGen::kernels_reservoir
         #NGen::kernels_reservoir_timeless
         #NGen::forcing
-        #${TORCH_LIBRARIES}
+        #NGen::"${TORCH_LIBRARIES}"
+        ${TORCH_LIBRARIES}
         )
 
 # For automated testing with Google Test
