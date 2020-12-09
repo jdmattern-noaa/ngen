@@ -186,7 +186,7 @@ int main(int argc, char *argv[]) {
     catchment_collection.reset();
     for(auto& feature : *nexus_collection)
     {
-      
+
     std::cout<<"2.5 \n";
       std::string feat_id = feature->get_id();
       //FIXME rework how we use IDs to NOT force parsing???
@@ -242,7 +242,7 @@ int main(int argc, char *argv[]) {
 
          std::cout << "0.1 \n";
       for (std::pair<std::string, std::shared_ptr<realization::Formulation>> formulation_pair : manager ) {
-        formulation_pair.second->set_et_params(pdm_et_data);
+      //  formulation_pair.second->set_et_params(pdm_et_data);
         //get the catchment response
         //TODO impose unit from formulation
         double response = formulation_pair.second->get_response(output_time_index, 3600.0);
@@ -250,36 +250,7 @@ int main(int argc, char *argv[]) {
 
          std::cout << "1.0 \n";
         std::cout<<"\tCatchment "<<formulation_pair.first<<" contributing "<<response<<" m/s to "<<catchment_to_nexus[formulation_pair.first]<<std::endl;
-
-/*
-        std::cout<<"\tCatchment ";
-
-        std::cout<<"\n";
-
-        std::cout<<formulation_pair.first;
-        std::cout<<"\n";
-
-        std::cout<<" contributing ";
-        std::cout<<"\n";
-
-        std::cout <<response;
-        std::cout<<"\n";
-
-        std::cout<<" m/s to ";
-        std::cout<<"\n";
-
-
-         std::cout << "1.04 \n";
- */
-
-
         std::cout<<catchment_to_nexus[formulation_pair.first]<<std::endl;
-
-
-
-
-
-
 
          std::cout << "1.05 \n";
       // If the timestep is 0, also write the header line to the file
