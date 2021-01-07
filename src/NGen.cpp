@@ -231,7 +231,8 @@ int main(int argc, char *argv[]) {
       std::string current_timestamp = manager.Simulation_Time_Object->get_timestamp(output_time_index);
 
       for (std::pair<std::string, std::shared_ptr<realization::Formulation>> formulation_pair : manager ) {
-      //  formulation_pair.second->set_et_params(pdm_et_data);
+        formulation_pair.second->set_et_params(pdm_et_data);
+
         //get the catchment response
         //TODO impose unit from formulation
         double response = formulation_pair.second->get_response(output_time_index, 3600.0);
