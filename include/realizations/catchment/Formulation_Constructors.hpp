@@ -17,7 +17,6 @@
     #include "LSTM_Realization.hpp"
 #endif
 
-
 namespace realization {
     typedef std::shared_ptr<Formulation> (*constructor)(std::string, forcing_params, utils::StreamHandler);
 
