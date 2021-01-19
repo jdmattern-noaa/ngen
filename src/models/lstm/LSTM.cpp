@@ -188,7 +188,7 @@ namespace lstm {
         out_flow = out_flow * 0.028316847; //convert cfs to cms
 
         ////////////////////
-        ///////temp: mult precip output by output by area in sq km
+        ///////temp: mult by output by area in sq km
         out_flow = out_flow * 15.617167;
         //////////////
 
