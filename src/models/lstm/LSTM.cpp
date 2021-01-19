@@ -160,6 +160,11 @@ namespace lstm {
         std::vector<torch::jit::IValue> inputs;
         torch::Tensor forcing = torch::zeros({1, 11});
 
+        ///////////////////////
+        //////temp: mult precip by 1000
+        precip_meters_per_second = precip_meters_per_second * 1000;
+        //////////////////////
+
         forcing[0][0] = lstm_model::normalize("Precip_rate", precip_meters_per_second);
         forcing[0][1] = lstm_model::normalize("SPFH_2maboveground_kg_per_kg", SPFH_2maboveground_kg_per_kg);
         forcing[0][2] = lstm_model::normalize("TMP_2maboveground_K", TMP_2maboveground_K);
@@ -181,6 +186,12 @@ namespace lstm {
       	//Get the outputs
         double out_flow = lstm_model::denormalize( "obs", output[0].toTensor().item<double>() );
         out_flow = out_flow * 0.028316847; //convert cfs to cms
+
+        ////////////////////
+        ///////temp: mult precip output by output by area in sq km
+        out_flow = out_flow * 15.617167;
+        //////////////
+
         fluxes = std::make_shared<lstm_fluxes>( lstm_fluxes( out_flow ) ) ;
 
         current_state = std::make_shared<lstm_state>( lstm_state(output[1].toTensor(), output[2].toTensor()) );
