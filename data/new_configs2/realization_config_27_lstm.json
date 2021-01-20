@@ -1,0 +1,61 @@
+{
+    "global": {
+      "formulations": [
+            {
+                "name": "simple_lumped",
+                "params": {
+                    "sr": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "storage": 0.001,
+                    "gw_storage": 0.001,
+                    "gw_max_storage": 9.023944188868205,
+                    "nash_max_storage": 0.3934705132722697,
+                    "smax": 4.919913810548227,
+                    "a": 0.008784824554625047,
+                    "b": 2.2831555213051096,
+                    "Ks": 0.08439781010313648,
+                    "Kq": 0.37212158848389454,
+                    "n": 3,
+                    "t": 0
+                }
+            }
+        ],
+        "forcing": {
+            "file_pattern": ".*{{id}}.*.csv",
+            "path": "./coarse/forcing/",
+            "start_time": "2015-12-01 00:00:00",
+            "end_time": "2015-12-30 23:00:00"
+        }
+    },
+    "time": {
+        "start_time": "2015-12-01 00:00:00",
+        "end_time": "2015-12-30 23:00:00",
+        "output_interval": 3600
+    },
+    "catchments": {
+        "cat-27": {
+          "formulations": [
+            { "name": "lstm",
+              "params": {
+                "pytorch_model_path": "./data/lstm/sugar_creek_trained.pt",
+                "normalization_path": "./data/lstm/input_scaling.csv",
+                "initial_state_path": "./data/lstm/initial_states.csv",
+                "latitude": 35.176113478111198 ,
+                "longitude": -80.719184317999975,
+                "area_square_km": 18.92205293,
+                "useGPU": false
+            }
+          }
+          ],
+            "forcing": {
+                "path": "./coarse/forcing/cat-27_2015-12-01 00_00_00_2015-12-30 23_00_00.csv",
+                "start_time": "2015-12-01 00:00:00",
+                "end_time": "2015-12-30 23:00:00"
+            }
+        }
+
+    }
+}
