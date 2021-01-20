@@ -250,7 +250,7 @@ int main(int argc, char *argv[]) {
 
         catchment_outfiles[formulation_pair.first] << output_time_index << "," << current_timestamp << "," << output_str << std::endl;
 
-        response = response * boost::geometry::area(nexus_collection->get_feature(formulation_pair.first)->geometry<geojson::multipolygon_t>());
+        //response = response * boost::geometry::area(nexus_collection->get_feature(formulation_pair.first)->geometry<geojson::multipolygon_t>());
 
         std::cout << "\t\tThe modified response is: " << response << std::endl;
 /*

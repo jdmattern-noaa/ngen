@@ -189,7 +189,7 @@ namespace lstm {
 
         ////////////////////
         ///////temp: mult by output by area in sq km
-        out_flow = out_flow * 15.617167;
+        //out_flow = out_flow * 15.617167;
         //////////////
 
         fluxes = std::make_shared<lstm_fluxes>( lstm_fluxes( out_flow ) ) ;
