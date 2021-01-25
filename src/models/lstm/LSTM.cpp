@@ -29,6 +29,7 @@ ScaleParams read_scale_params(std::string path)
 	{   //row has var, mean, std_dev
  	    //read into map keyed on var name, param name
     	    params[ (*row)[0] ]["mean"] = strtof( (*row)[1].c_str(), NULL);
+
   	    params[ (*row)[0] ]["std_dev"] = strtof( (*row)[2].c_str(), NULL);
 	}
     }
@@ -104,8 +105,7 @@ namespace lstm {
         {
             h_vec.push_back( std::strtof( (*row)[0].c_str(), NULL ) );
             c_vec.push_back( std::strtof( (*row)[1].c_str(), NULL ) );  
-        }
-
+        } 
         current_state = std::make_shared<lstm_state>(lstm_state(h_vec, c_vec));
         previous_state = std::make_shared<lstm_state>(lstm_state(h_vec, c_vec));
 
@@ -160,6 +160,16 @@ namespace lstm {
         std::vector<torch::jit::IValue> inputs;
         torch::Tensor forcing = torch::zeros({1, 11});
 
+       ///////////////////////
+        //////temp: mult precip by 1000
+        precip_meters_per_second = precip_meters_per_second * 1000;
+        //////////////////////
+
+cout << "Raw forcing: " << endl;
+cout << precip_meters_per_second << " " << SPFH_2maboveground_kg_per_kg << " " << TMP_2maboveground_K << " " << DLWRF_surface_W_per_meters_squared << " " << DSWRF_surface_W_per_meters_squared << " " << PRES_surface_Pa << " " << UGRD_10maboveground_meters_per_second << " " << VGRD_10maboveground_meters_per_second << endl; 
+
+
+
         forcing[0][0] = lstm_model::normalize("Precip_rate", precip_meters_per_second);
         forcing[0][1] = lstm_model::normalize("SPFH_2maboveground_kg_per_kg", SPFH_2maboveground_kg_per_kg);
         forcing[0][2] = lstm_model::normalize("TMP_2maboveground_K", TMP_2maboveground_K);
@@ -172,6 +182,10 @@ namespace lstm {
         forcing[0][9] = lstm_model::normalize("Latitude", model_params.latitude);
         forcing[0][10] = lstm_model::normalize("Longitude", model_params.longitude);
 
+cout << "normalized forcing : " << endl;
+        cout << forcing[0][0] << forcing[0][1] << forcing[0][2] << forcing[0][3] << forcing[0][4] << forcing[0][5] << forcing[0][6] << forcing[0][7] << forcing[0][8] << forcing[0][9] << forcing[0][10] << endl;
+
+
         // Create the model input for one time step
       	inputs.push_back(forcing.to(device));
         inputs.push_back(previous_state->h_t);
@@ -180,7 +194,14 @@ namespace lstm {
         auto output = model.forward(inputs).toTuple()->elements();
       	//Get the outputs
         double out_flow = lstm_model::denormalize( "obs", output[0].toTensor().item<double>() );
-        out_flow = out_flow * 0.028316847; //convert cfs to cms
+        //out_flow = out_flow * 0.028316847; //convert cfs to cms
+
+        ////////////////////
+        ///////temp: mult by output by area in sq km
+        out_flow = out_flow * 15.617167;
+        //////////////
+        cout << "outflow: " << out_flow;
+
         fluxes = std::make_shared<lstm_fluxes>( lstm_fluxes( out_flow ) ) ;
 
         current_state = std::make_shared<lstm_state>( lstm_state(output[1].toTensor(), output[2].toTensor()) );
@@ -200,6 +221,11 @@ namespace lstm {
         double mean, std_dev;
         mean = this->scale[ forcing_variable_string ]["mean"];
         std_dev = this->scale[ forcing_variable_string ]["std_dev"];
+        cout << "-------------denormalize function--------------: " << endl;
+        cout << "normalized_output: " << normalized_output << endl;
+        cout << "mean: " << mean << " " << "std_dev: " << std_dev << endl;
+        cout << "---------------------------------------------" << endl;
+        
         return (normalized_output * std_dev) + mean;
     }
 
@@ -215,6 +241,10 @@ namespace lstm {
         double mean, std_dev;
         mean = this->scale[ forcing_variable_string ]["mean"];
         std_dev = this->scale[ forcing_variable_string ]["std_dev"];
+        cout << "-------------normalize function--------------: " << endl;     
+        cout << "input forcing: " << forcing_variable << endl; 
+        cout << "mean: " << mean << " " << "std_dev: " << std_dev << endl;
+        cout << "---------------------------------------------" << endl;
         return  (forcing_variable - mean) / std_dev;
     }
 

@@ -49,7 +49,7 @@
           "formulations": [
             { "name": "lstm",
               "params": {
-                "pytorch_model_path": "./data/lstm/sugar_creek_trained.pt",
+                "pytorch_model_path": "./data/lstm/lstm.ptc",
                 "normalization_path": "./data/lstm/input_scaling.csv",
                 "initial_state_path": "./data/lstm/initial_states.csv",
                 "latitude": 35.2607453,
