@@ -414,7 +414,7 @@ double Tshirt_C_Realization::get_response(time_step_t t_index, time_step_t t_del
     int response_result = run_formulation_for_timestep(precip, t_delta_s);
     // TODO: check t_index is the next expected time step to be calculated
     //Return m/hr converted to m/s
-    return fluxes.back()->Qout_m / t_delta_s;
+    return area*(fluxes.back()->Qout_m / t_delta_s);
 }
 
 function<double(tshirt_c_result_fluxes)>

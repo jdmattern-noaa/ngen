@@ -219,6 +219,15 @@ int main(int argc, char *argv[]) {
       }
 
     }
+
+    /*
+      Quick hack to get some basic geom data into the  Formulations
+    */
+
+    for (std::pair<std::string, std::shared_ptr<realization::Formulation>> formulation_pair : manager ) {
+      formulation_pair.second->set_area(boost::geometry::area(nexus_collection->get_feature(formulation_pair.first)->geometry<geojson::multipolygon_t>()));
+    }
+
     std::cout<<"Running Models"<<std::endl;
 
     std::shared_ptr<pdm03_struct> pdm_et_data = std::make_shared<pdm03_struct>(get_et_params());
@@ -248,7 +257,7 @@ int main(int argc, char *argv[]) {
         }
         //convert m/s to m^3/s
         //TODO pass area to formulation as paramter
-        response = response * boost::geometry::area(nexus_collection->get_feature(formulation_pair.first)->geometry<geojson::multipolygon_t>());
+        //response = response * boost::geometry::area(nexus_collection->get_feature(formulation_pair.first)->geometry<geojson::multipolygon_t>());//*0.000001;
 
         std::string output_str = formulation_pair.second->get_output_line_for_timestep(output_time_index);
         catchment_outfiles[formulation_pair.first] << output_time_index << "," << current_timestamp << "," << output_str << "," << response << std::endl;

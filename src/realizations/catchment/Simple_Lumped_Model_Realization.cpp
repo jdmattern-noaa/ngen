@@ -109,7 +109,7 @@ double Simple_Lumped_Model_Realization::get_response(time_step_t t, time_step_t 
 
     pdm03_struct params_copy = get_et_params();
     hymod_kernel::run(dt, params, state[t], state[t+1], fluxes[t], precip*dt, &params_copy);
-    return fluxes[t].slow_flow_meters_per_second + fluxes[t].runoff_meters_per_second;
+    return area*(fluxes[t].slow_flow_meters_per_second + fluxes[t].runoff_meters_per_second);
 }
 
 /**

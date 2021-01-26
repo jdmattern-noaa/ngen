@@ -99,8 +99,8 @@ double Tshirt_Realization::get_response(time_step_t t_index, time_step_t t_delta
     state[t_index + 1] = model->get_current_state();
     fluxes[t_index] = model->get_fluxes();
     double giuh = giuh_kernel->calc_giuh_output(t_index, fluxes[t_index]->surface_runoff_meters_per_second);
-    return fluxes[t_index]->soil_lateral_flow_meters_per_second + fluxes[t_index]->groundwater_flow_meters_per_second +
-           giuh;
+    return area*(fluxes[t_index]->soil_lateral_flow_meters_per_second + fluxes[t_index]->groundwater_flow_meters_per_second +
+           giuh);
 }
 
 /**
@@ -278,7 +278,7 @@ void Tshirt_Realization::create_formulation(boost::property_tree::ptree &config,
                 message += ", ";
             }
         }
-        
+
         throw std::runtime_error(message);
     }
 

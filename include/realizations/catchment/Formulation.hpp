@@ -23,7 +23,7 @@ namespace realization {
             typedef long time_step_t;
 
             Formulation(std::string id) : id(id) {}
-            
+
             virtual ~Formulation(){};
 
             virtual std::string get_formulation_type() = 0;
@@ -80,10 +80,12 @@ namespace realization {
              */
             virtual std::string get_output_line_for_timestep(int timestep,
                                                              std::string delimiter = DEFAULT_FORMULATION_OUTPUT_DELIMITER) = 0;
-            
+
             virtual void create_formulation(boost::property_tree::ptree &config, geojson::PropertyMap *global = nullptr) = 0;
             virtual void create_formulation(geojson::PropertyMap properties) = 0;
 
+            virtual void set_area(double) = 0;
+            virtual double get_area() = 0;
         protected:
 
             virtual const std::vector<std::string>& get_required_parameters() = 0;
@@ -128,7 +130,7 @@ namespace realization {
                             message += ", ";
                         }
                     }
-                    
+
                     throw std::runtime_error(message);
                 }
             }

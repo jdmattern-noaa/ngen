@@ -11,9 +11,9 @@ namespace realization {
 
     class Catchment_Formulation : public Formulation, public HY_CatchmentArea, public Et_Accountable {
         public:
-            Catchment_Formulation(std::string id, forcing_params forcing_config, utils::StreamHandler output_stream) : Formulation(id), HY_CatchmentArea(forcing_config, output_stream) {};
+            Catchment_Formulation(std::string id, forcing_params forcing_config, utils::StreamHandler output_stream) : Formulation(id), HY_CatchmentArea(forcing_config, output_stream), area(0.0) {};
 
-            Catchment_Formulation(std::string id) : Formulation(id){};
+            Catchment_Formulation(std::string id) : Formulation(id),  area(0.0) {};
 
             /**
              * Get a header line appropriate for a file made up of entries from this type's implementation of
@@ -48,6 +48,14 @@ namespace realization {
             virtual void create_formulation(boost::property_tree::ptree &config, geojson::PropertyMap *global = nullptr) = 0;
 
             virtual ~Catchment_Formulation(){};
+
+            //virtual double get_flow_cubic_meters_per_second() = 0;
+
+            //virtual double get_flow_cubic_meters_per_second(double area) = 0;
+            void set_area(double area) override { this->area = area;}
+            double get_area(){ return this->area;}
+        protected:
+          double area;
     };
 }
 #endif // CATCHMENT_FORMULATION_H
