@@ -161,7 +161,8 @@ namespace lstm {
         torch::Tensor forcing = torch::zeros({1, 11});
 
        ///////////////////////
-        //////temp: mult precip by 1000
+        //////temp: mult precip by 1000 Should this be done by the realization??? TODO
+        //precip in training verified to be mm/s, need to convert mm/s to m/s.
         precip_meters_per_second = precip_meters_per_second * 1000;
         //////////////////////
 
@@ -198,7 +199,7 @@ cout << "normalized forcing : " << endl;
 
         ////////////////////
         ///////temp: mult by output by area in sq km
-        out_flow = out_flow * 15.617167;
+        out_flow = out_flow * this->model_params.area;
         //////////////
         cout << "outflow: " << out_flow;
 
